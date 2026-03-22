@@ -4,9 +4,11 @@ import Data.Bit
 
 import qualified Data.ByteString as BS
 
+import Data.Char
+
 import qualified Data.Vector.Unboxed as V
 
-import Numeric (showHex)
+import Numeric
 
 newtype Hex a = Hex a
 
@@ -16,5 +18,13 @@ instance Integral a => Show (Hex a) where
 hexBS :: BS.ByteString -> String
 hexBS = show . fmap Hex . BS.unpack
 
-fromBools :: [Bool] -> V.Vector Bit
-fromBools = V.fromList . fmap Bit
+newtype Bin a = Bin a
+
+instance Integral a => Show (Bin a) where
+    showsPrec _ (Bin x) = ("0b" <>) . showIntAtBase 2 intToDigit x
+
+binBS :: BS.ByteString -> String
+binBS = show .fmap Hex . BS.unpack
+
+decBS :: BS.ByteString -> String
+decBS = show . BS.unpack

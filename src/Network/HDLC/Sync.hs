@@ -72,3 +72,13 @@ deframeAll =
             | otherwise = f : deframeAll rest
         go _ = []
     in go . startDeframer
+
+-- | Like 'deframeAll', but tolerate missing stop flag at end of last frame.
+deframeAllU :: V.Vector Bit -> [V.Vector Bit]
+deframeAllU =
+    let go (Finished f rest)
+            | V.null rest = [f]
+            | otherwise = f : deframeAllU rest
+        go (CollectFrame cs) = cs []
+        go _ = []
+    in go . startDeframer

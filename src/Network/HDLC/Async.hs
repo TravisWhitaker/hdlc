@@ -6,6 +6,7 @@ module Network.HDLC.Async (
   , Deframer(..)
   , startDeframer
   , deframeAll
+  , deframeAllU
   ) where
 
 import qualified Data.ByteString as BS
@@ -81,5 +82,15 @@ deframeAll =
     let go (Finished f rest)
             | BS.null rest = [f]
             | otherwise = f : deframeAll rest
+        go _ = []
+    in go . startDeframer
+
+-- | Like 'deframeAll', but tolerate missing stop flag at end of last frame.
+deframeAllU :: BS.ByteString -> [BS.ByteString]
+deframeAllU =
+    let go (Finished f rest)
+            | BS.null rest = [f]
+            | otherwise = f : deframeAll rest
+        go (CollectFrame cs) = cs []
         go _ = []
     in go . startDeframer
